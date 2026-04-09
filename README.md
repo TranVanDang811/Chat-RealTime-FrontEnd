@@ -1,73 +1,59 @@
-# React + TypeScript + Vite
+# Chat Realtime Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Frontend for Realtime Chat App using React + Redux Toolkit + WebSocket (STOMP).
 
-Currently, two official plugins are available:
+### Screenshots
+## Login/Register
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+<img width="1916" height="979" alt="image" src="https://github.com/user-attachments/assets/f1834a47-e875-460a-a633-847f89cf1186" />
 
-## React Compiler
+<img width="1919" height="977" alt="image" src="https://github.com/user-attachments/assets/2d582b2f-4f57-41fc-946a-d76582cd04be" />
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Profile
 
-## Expanding the ESLint configuration
+<img width="1913" height="977" alt="image" src="https://github.com/user-attachments/assets/5b0da824-a995-46f1-bd5f-6cca660a2f57" />
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+##  Add friends
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+<img width="1919" height="980" alt="image" src="https://github.com/user-attachments/assets/5860e67f-1a23-4110-8f41-e1e595472d41" />
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+<img width="1919" height="920" alt="image" src="https://github.com/user-attachments/assets/5db23eed-1d13-4c44-b81c-d930e822eeac" />
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Chat List
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+<img width="1919" height="930" alt="image" src="https://github.com/user-attachments/assets/f1c36e1a-5631-4ceb-834d-f65f886ed937" />
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### Features
+
+- Authentication (JWT)
+- Realtime messaging
+- Private & Group chat
+- Notifications
+- AI chat summary
+- Profile & avatar
+- Friend system
+
+### Tech Stack
+- ReactJS
+- Redux Toolkit
+- Axios
+- WebSocket (STOMP)
+- TailwindCSS
+
+## WebSocket
+
+### Connect
+- ws://localhost:8080/ws
+
+### Subscribe
+- /topic/room/{roomId}
+- /user/{userId}/queue/messages
+- /user/{userId}/queue/summary
+
+### Send
+- /app/chat.send
+- /app/chat.summarize
+
+👨‍💻 Author
+Van Dang
