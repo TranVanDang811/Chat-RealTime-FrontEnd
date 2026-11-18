@@ -14,30 +14,24 @@ A modern, responsive, and feature-rich web frontend client for the **Realtime Ch
 ## 📸 Screenshots Showcase
 
 ### 🔐 Authentication (Sign In & Sign Up)
-<p align="center">
-  <img width="850" alt="Sign In Screen" src="https://github.com/user-attachments/assets/f1834a47-e875-460a-a633-847f89cf1186" />
-</p>
-<p align="center">
-  <img width="850" alt="Sign Up Screen" src="https://github.com/user-attachments/assets/2d582b2f-4f57-41fc-946a-d76582cd04be" />
-</p>
+
+<img width="1916" height="963" alt="Screenshot 2026-11-18 145254" src="https://github.com/user-attachments/assets/c978ec48-583d-4312-bf32-2163a2770e4b" />
+
+<img width="1912" height="960" alt="Screenshot 2026-11-18 145342" src="https://github.com/user-attachments/assets/bf613bf4-222e-4225-a325-ba5642da0d4f" />
 
 ### 💬 Chat Room & Real-time Messaging
-<p align="center">
-  <img width="850" alt="Chat Workspace" src="https://github.com/user-attachments/assets/f1c36e1a-5631-4ceb-834d-f65f886ed937" />
-</p>
+
+<img width="1911" height="963" alt="Screenshot 2026-11-18 145512" src="https://github.com/user-attachments/assets/eb4ec5e6-b519-4068-b3b6-1f9db4426057" />
 
 ### 🤝 Friend Management & Social Interaction
-<p align="center">
-  <img width="850" alt="Friend Request Interface" src="https://github.com/user-attachments/assets/5860e67f-1a23-4110-8f41-e1e595472d41" />
-</p>
-<p align="center">
-  <img width="850" alt="Friend List" src="https://github.com/user-attachments/assets/5db23eed-1d13-4c44-b81c-d930e822eeac" />
-</p>
+
+<img width="1914" height="963" alt="Screenshot 2026-11-18 145543" src="https://github.com/user-attachments/assets/4f150791-847c-4f3d-b10c-9d4abade7ae2" />
+
+<img width="1913" height="964" alt="Screenshot 2026-11-18 145554" src="https://github.com/user-attachments/assets/77ce7851-07b2-487c-bb51-f6a156718b54" />
 
 ### 👤 Profile & User Settings
-<p align="center">
-  <img width="850" alt="Profile Modal" src="https://github.com/user-attachments/assets/5b0da824-a995-46f1-bd5f-6cca660a2f57" />
-</p>
+
+<img width="1913" height="963" alt="Screenshot 2026-11-18 145609" src="https://github.com/user-attachments/assets/9a82f111-2267-410e-90a0-8cda16d55e0b" />
 
 ---
 
