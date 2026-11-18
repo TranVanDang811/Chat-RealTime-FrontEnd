@@ -12,7 +12,7 @@ export default {
 
   // ===== GET USER BY ID =====
   getById: (id) =>
-    axiosInstance.get(`/api/users/${id}`).then(res => res.data), // get user by id
+    axiosInstance.get(`/api/users/id/${id}`).then(res => res.data), // get user by id
 
   // ===== GET ALL USERS =====
   getAll: () =>

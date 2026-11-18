@@ -4,9 +4,11 @@ import {
   updateRoomMembers,
   setSummary,
   setSummaryLoading,
-  receiveNotification
+  receiveNotification,
+  receiveNewRoom
 } from "./chatSlice";
-import { sendMessage } from "./chatThunks";
+import { getRooms, sendMessage } from "./chatThunks";
+import { addFriend, addIncomingRequest, removeFriend, removeIncoming, removeOutgoing } from "../friend/friendSlice";
 
 let stompClient = null;       // WebSocket client
 let subscriptions = {};       // store all subscriptions
@@ -34,14 +36,18 @@ const createClient = () => {
 
 /* ===== CONNECT ===== */
 export const connectSocket = (dispatch, userId) => {
-  if (stompClient?.active) return; // already connected
+ 
+  if (stompClient?.active) {
+    subscribeUserQueue(dispatch, userId);
+    return;
+  }
 
   const client = createClient();
   if (!client) return;
 
   client.onConnect = () => {
-    subscribeSummary(dispatch);        // listen summary
-    subscribeUserQueue(dispatch, userId); // listen notifications
+    subscribeSummary(dispatch);
+    subscribeUserQueue(dispatch, userId);
   };
 
   stompClient = client;
@@ -126,7 +132,7 @@ export const subscribeSummary = (dispatch) => {
 };
 
 /* ===== SEND SUMMARY REQUEST ===== */
-export const summarizeWS = (roomId, dispatch) => {
+export const summarizeWS = (roomId, dispatch, forceRefresh = false) => {
   if (!stompClient?.connected) return;
 
   dispatch(setSummary(null));
@@ -134,7 +140,7 @@ export const summarizeWS = (roomId, dispatch) => {
 
   stompClient.publish({
     destination: "/app/chat.summarize",
-    body: JSON.stringify({ roomId, limit: 30 }),
+    body: JSON.stringify({ roomId, limit: 30, forceRefresh }),
   });
 };
 
@@ -172,15 +178,46 @@ export const disconnectSocket = () => {
 /* ===== USER NOTIFICATIONS ===== */
 export const subscribeUserQueue = (dispatch, userId) => {
   if (!stompClient || !userId) return;
-
   unsubscribe("userQueue");
 
-  subscribe("userQueue", `/topic/user/${userId}/notifications`, (msg) => {
+  subscribe("userQueue", `/user/queue/notifications`, (msg) => {
     try {
-      const data = JSON.parse(msg.body);
+      const { type, data } = JSON.parse(msg.body);
 
-      if (data.senderId !== undefined) {
-        dispatch(receiveNotification(data)); // update unread
+      switch (type) {
+        case "NEW_MESSAGE":
+          dispatch(receiveNotification(data));
+          break;
+
+        case "FRIEND_REQUEST":
+          dispatch(addIncomingRequest(data));
+          break;
+
+        case "FRIEND_ACCEPTED":
+          dispatch(removeOutgoing(data.id));
+          dispatch(removeIncoming(data.id));
+          dispatch(addFriend(data));
+          dispatch(getRooms());
+          break;
+
+        case "FRIEND_REJECTED":
+          dispatch(removeOutgoing(data));  
+          break;
+
+        case "FRIEND_REMOVED":
+          dispatch(removeFriend(data));   
+          break;
+
+        case "NEW_ROOM":
+          dispatch(receiveNewRoom(data));
+          break;
+
+        case "ROOM_UPDATED":
+          dispatch(updateRoomMembers(data));
+          break;
+
+        default:
+          console.warn("Unknown notification type:", type);
       }
     } catch (e) {
       console.error("Parse notification error:", e);

@@ -58,4 +58,16 @@ export default {
       roomId: payload.roomId,   // room id
       roomName: payload.roomName, // new name
     }).then(unwrap),
+
+  // ===== UPDATE MEMBER NICKNAME =====
+  updateNickname: (payload) =>
+    axiosInstance.put("/chat/room/nickname", {
+      roomId: payload.roomId,
+      targetUserId: payload.targetUserId,
+      nickname: payload.nickname,
+    }).then(unwrap),
+
+  // ===== RECALL MESSAGE =====
+  recallMessage: (messageId) =>
+    axiosInstance.put(`/chat/messages/${messageId}/recall`).then(unwrap),
 };

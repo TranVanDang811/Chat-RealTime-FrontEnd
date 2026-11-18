@@ -31,15 +31,16 @@ const friendSlice = createSlice({
     // ===== REALTIME =====
 
     // add incoming request
-    addIncomingRequest(state, action) {
-      state.incoming.unshift(action.payload);
-    },
+ addIncomingRequest(state, action) {
+  const exists = state.incoming.some(f => f.id === action.payload.id);
+  if (!exists) state.incoming.unshift(action.payload);
+},
 
     // add new friend
-    addFriend(state, action) {
-      state.friends.unshift(action.payload);
-    },
-
+addFriend(state, action) {
+  const exists = state.friends.some(f => f.id === action.payload.id);
+  if (!exists) state.friends.unshift(action.payload);
+},
     // remove incoming request
     removeIncoming(state, action) {
       state.incoming = state.incoming.filter(
@@ -58,6 +59,10 @@ const friendSlice = createSlice({
     addOutgoing(state, action) {
       state.outgoing.unshift(action.payload);
     },
+    removeFriend(state, action) {
+  // action.payload = friendshipId
+  state.friends = state.friends.filter(f => f.id !== action.payload);
+},
   },
 
   extraReducers: (builder) => {
@@ -80,17 +85,14 @@ const friendSlice = createSlice({
 
       // ===== ACCEPT FRIEND =====
       .addCase(acceptFriend.fulfilled, (state, action) => {
-        const friend = action.payload;
-
-        // remove from requests
-        state.incoming = state.incoming.filter(f => f.id !== friend.id);
-        state.outgoing = state.outgoing.filter(f => f.id !== friend.id);
-
-        // add to friend list
-        if (friend.user) {
-          state.friends.unshift(friend);
-        }
-      })
+  const friend = action.payload;
+  state.incoming = state.incoming.filter(f => f.id !== friend.id);
+  state.outgoing = state.outgoing.filter(f => f.id !== friend.id);
+  const exists = state.friends.some(f => f.id === friend.id); // ← thêm check
+  if (friend.user && !exists) {
+    state.friends.unshift(friend);
+  }
+})
 
       // ===== REJECT FRIEND =====
       .addCase(rejectFriend.fulfilled, (state, action) => {
@@ -120,6 +122,7 @@ export const {
   removeIncoming,
   removeOutgoing,
   addOutgoing,
+   removeFriend,
 } = friendSlice.actions;
 
 export default friendSlice.reducer;

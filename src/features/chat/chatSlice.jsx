@@ -7,6 +7,8 @@ import {
   getRooms,
   updateRoomName,
   addRoomMembers,
+  updateNickname,
+  recallMessage,
 } from "./chatThunks";
 
 // ===== INITIAL STATE =====
@@ -76,11 +78,23 @@ const chatSlice = createSlice({
     receiveMessage: (state, action) => {
       const msg = action.payload;
 
-      // avoid duplicate
-      const exists = state.messages.some(
+      // update if message already exists (e.g. recalled or edited)
+      const existingIndex = state.messages.findIndex(
         (m) => String(m.id) === String(msg.id)
       );
-      if (exists) return;
+      if (existingIndex !== -1) {
+        state.messages[existingIndex] = {
+          ...state.messages[existingIndex],
+          ...msg,
+        };
+        const room = state.rooms.find(
+          (r) => r.id === msg.roomId || r.roomId === msg.roomId
+        );
+        if (room && (room.lastMessageId === msg.id || !room.lastMessageId)) {
+          room.lastMessage = msg.content;
+        }
+        return;
+      }
 
       // replace temp message
       if (msg.tempId) {
@@ -128,7 +142,31 @@ const chatSlice = createSlice({
 
     // ===== RECEIVE NOTIFICATION =====
     receiveNotification(state, action) {
-      const msg = action.payload;
+      const payload = action.payload;
+
+      // handle recalled notification
+      if (payload?.type === "MESSAGE_RECALLED" && payload?.data) {
+        const recalledMsg = payload.data;
+        const existingIndex = state.messages.findIndex(
+          (m) => String(m.id) === String(recalledMsg.id)
+        );
+        if (existingIndex !== -1) {
+          state.messages[existingIndex] = {
+            ...state.messages[existingIndex],
+            ...recalledMsg,
+          };
+        }
+        const room = state.rooms.find(
+          (r) => r.id === recalledMsg.roomId || r.roomId === recalledMsg.roomId
+        );
+        if (room) {
+          room.lastMessage = recalledMsg.content;
+        }
+        return;
+      }
+
+      const msg = payload;
+      if (!msg?.roomId) return;
 
       const isCurrentRoom =
         state.currentRoom?.id === msg.roomId ||
@@ -201,9 +239,21 @@ const chatSlice = createSlice({
       })
       .addCase(getMessages.fulfilled, (state, action) => {
         state.messagesLoading = false;
-        state.messages = (action.payload || []).sort(
-          (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
-        );
+        const payload = action.payload;
+        const msgList = payload?.messages || (Array.isArray(payload) ? payload : []);
+        const page = payload?.page || 0;
+
+        if (page > 0) {
+          const existingIds = new Set(state.messages.map((m) => String(m.id)));
+          const older = msgList.filter((m) => !existingIds.has(String(m.id)));
+          state.messages = [...older, ...state.messages].sort(
+            (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+          );
+        } else {
+          state.messages = [...msgList].sort(
+            (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+          );
+        }
       })
       .addCase(getMessages.rejected, (state, action) => {
         state.messagesLoading = false;
@@ -238,14 +288,57 @@ const chatSlice = createSlice({
       // ===== UPDATE ROOM =====
       .addCase(updateRoomName.fulfilled, (state, action) => {
         const updated = normalizeRoom(action.payload);
-        const room = state.rooms.find(r => r.id === updated.id);
-        if (room) Object.assign(room, updated);
+        const index = state.rooms.findIndex((r) => r.id === updated.id || r.roomId === updated.id);
+        if (index !== -1) {
+          state.rooms[index] = { ...state.rooms[index], ...updated };
+        }
+        if (state.currentRoom?.id === updated.id || state.currentRoom?.roomId === updated.id) {
+          state.currentRoom = { ...state.currentRoom, ...updated };
+        }
       })
 
       .addCase(addRoomMembers.fulfilled, (state, action) => {
         const updated = normalizeRoom(action.payload);
-        const room = state.rooms.find(r => r.id === updated.id);
-        if (room) Object.assign(room, updated);
+        const index = state.rooms.findIndex((r) => r.id === updated.id || r.roomId === updated.id);
+        if (index !== -1) {
+          state.rooms[index] = { ...state.rooms[index], ...updated };
+        }
+        if (state.currentRoom?.id === updated.id || state.currentRoom?.roomId === updated.id) {
+          state.currentRoom = { ...state.currentRoom, ...updated };
+        }
+      })
+
+      .addCase(updateNickname.fulfilled, (state, action) => {
+        const updated = normalizeRoom(action.payload);
+        const index = state.rooms.findIndex((r) => r.id === updated.id || r.roomId === updated.id);
+        if (index !== -1) {
+          state.rooms[index] = { ...state.rooms[index], ...updated };
+        }
+        if (state.currentRoom?.id === updated.id || state.currentRoom?.roomId === updated.id) {
+          state.currentRoom = { ...state.currentRoom, ...updated };
+        }
+      })
+
+      // ===== RECALL MESSAGE =====
+      .addCase(recallMessage.fulfilled, (state, action) => {
+        const recalled = action.payload;
+        if (!recalled?.id) return;
+        const index = state.messages.findIndex(
+          (m) => String(m.id) === String(recalled.id)
+        );
+        if (index !== -1) {
+          state.messages[index] = {
+            ...state.messages[index],
+            ...recalled,
+            isRecalled: true,
+          };
+        }
+        const room = state.rooms.find(
+          (r) => r.id === recalled.roomId || r.roomId === recalled.roomId
+        );
+        if (room) {
+          room.lastMessage = recalled.content;
+        }
       });
   },
 });

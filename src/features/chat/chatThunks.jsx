@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import chatApi from "./chatApi";
+import chatApi from "./chatAPI";
 
 // ===== SEND MESSAGE =====
 export const sendMessage = createAsyncThunk(
@@ -19,11 +19,10 @@ export const getMessages = createAsyncThunk(
   async ({ roomId, page = 0, size = 20 }, { rejectWithValue }) => {
     try {
       const result = await chatApi.getMessages(roomId, page, size);
-      // ensure always return array
       const messages = Array.isArray(result)
         ? result
         : result?.result ?? [];
-      return messages;
+      return { messages, page, roomId };
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
@@ -97,6 +96,30 @@ export const addRoomMembers = createAsyncThunk(
   async ({ roomId, memberIds }, { rejectWithValue }) => {
     try {
       return await chatApi.addRoomMembers({ roomId, memberIds }); // add users
+    } catch (e) {
+      return rejectWithValue(e.response?.data?.message || e.message);
+    }
+  }
+);
+
+// ===== UPDATE MEMBER NICKNAME =====
+export const updateNickname = createAsyncThunk(
+  "chat/updateNickname",
+  async (payload, { rejectWithValue }) => {
+    try {
+      return await chatApi.updateNickname(payload);
+    } catch (e) {
+      return rejectWithValue(e.response?.data?.message || e.message);
+    }
+  }
+);
+
+// ===== RECALL MESSAGE =====
+export const recallMessage = createAsyncThunk(
+  "chat/recallMessage",
+  async (messageId, { rejectWithValue }) => {
+    try {
+      return await chatApi.recallMessage(messageId);
     } catch (e) {
       return rejectWithValue(e.response?.data?.message || e.message);
     }

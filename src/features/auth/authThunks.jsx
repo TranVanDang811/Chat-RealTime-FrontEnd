@@ -44,7 +44,7 @@ export const refreshToken = createAsyncThunk(
       if (!refreshToken) throw new Error("No refresh token");
 
       // 2. call API refresh
-      const res = await authAPI.refresh({ token: refreshToken });
+      const res = await authAPI.refresh({ refreshToken });
       const payload = res.result || res;
 
       const newToken = payload.token || payload.accessToken;
@@ -69,8 +69,10 @@ export const logout = createAsyncThunk(
   "auth/logout",
   async (payload) => {
     try {
+      const token = payload?.token || localStorage.getItem("token");
+      const refreshToken = payload?.refreshToken || localStorage.getItem("refreshToken");
       // call API logout
-      await authAPI.logout(payload);
+      await authAPI.logout({ token, refreshToken });
     } catch (e) {
       // ignore error (vẫn logout)
       console.error("Logout API error:", e);

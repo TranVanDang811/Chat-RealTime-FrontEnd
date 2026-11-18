@@ -12,16 +12,16 @@ if (!window.Buffer) window.Buffer = Buffer;
 // Redux
 import { Provider } from "react-redux";
 import { store } from "./app/store";
-
-// Material Tailwind
-
+import { ToastProvider } from "./components/common/ToastContext";
 
 const root = createRoot(document.getElementById("root"));
 
 root.render(
   <React.StrictMode>
-    <Provider store={store}>      
+    <Provider store={store}>
+      <ToastProvider>
         <RouterProvider router={router} />
+      </ToastProvider>
     </Provider>
   </React.StrictMode>
 );

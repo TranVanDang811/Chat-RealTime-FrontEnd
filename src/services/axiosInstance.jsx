@@ -68,10 +68,10 @@ axiosInstance.interceptors.response.use(
         const refreshToken = localStorage.getItem("refreshToken");
         if (!refreshToken) throw new Error("No refresh token");
 
-        // ⚠ QUAN TRỌNG: phải đúng field backend yêu cầu
+        // ⚠ QUAN TRỌNG: phải đúng field backend yêu cầu (refreshToken)
         const response = await axios.post(
           `${axiosInstance.defaults.baseURL}/auth/refresh`,
-          { token: refreshToken }
+          { refreshToken }
         );
 
         const newToken =
